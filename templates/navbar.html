@@ -1,0 +1,44 @@
+<nav class="navbar navbar-light bg-light">
+  <a class="navbar-brand" href="/">Placement Portal</a>
+
+  <ul class="navbar-nav flex-row">
+
+    {% if admin or company or student %}
+    <li class="nav-item mr-3">
+      <a class="nav-link {% if request.endpoint in ['admin_dashboard','company_dashboard','student_dashboard'] %}font-weight-bold{% endif %}"
+         href="{% if admin %}{{ url_for('admin_dashboard') }}{% elif company %}{{ url_for('company_dashboard') }}{% else %}{{ url_for('student_dashboard') }}{% endif %}">
+        Dashboard
+      </a>
+    </li>
+    {% endif %}
+
+    {% if student %}
+    <li class="nav-item mr-3">
+      <a class="nav-link {% if request.endpoint == 'student_update_profile' %}font-weight-bold{% endif %}"
+         href="{{ url_for('student_update_profile') }}">
+        Update Profile
+      </a>
+    </li>
+    {% endif %}
+
+    {% if admin or company or student %}
+    <li class="nav-item mr-3">
+      <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+    </li>
+    {% else %}
+    <li class="nav-item mr-3">
+      <a class="nav-link {% if request.endpoint == 'login' %}font-weight-bold{% endif %}"
+         href="{{ url_for('login') }}">
+        Login
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {% if request.endpoint == 'register' %}font-weight-bold{% endif %}"
+         href="{{ url_for('register') }}">
+        Register
+      </a>
+    </li>
+    {% endif %}
+
+  </ul>
+</nav>

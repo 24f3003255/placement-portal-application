@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="text-center mb-4">Admin Dashboard</h3>
+    <div class="row text-center">
+        <div class="col-md-3 col-sm-6 mb-3">
+            <a href="{{ url_for('manage_companies') }}" class="text-dark d-block" style="text-decoration:none;">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h6>Total Companies</h6>
+                        <h4>{{ total_companies }}</h4>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block style %}
+<style>
+.card {
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+</style>
+{% endblock %}

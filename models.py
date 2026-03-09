@@ -109,7 +109,7 @@ class Placement(db.Model):
 def create_default_admin():
     admin = AdminUser.query.filter_by(email_address="admin@admin.com").first()
     if not admin:
-        default_admin = AdminUser(full_name="Placement Admin",email_address="admin@college.com",password=generate_password_hash("admin"))
+        default_admin = AdminUser(full_name="Placement Admin",email_address="admin@admin.com",password=generate_password_hash("admin"))
         db.session.add(default_admin)
         db.session.commit()
         

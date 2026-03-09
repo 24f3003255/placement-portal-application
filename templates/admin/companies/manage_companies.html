@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="text-center mb-4">Manage Companies</h3>
+    <form method="GET" action="{{ url_for('manage_companies') }}" class="mb-3">
+        <div class="input-group">
+            <input 
+                type="text" 
+                name="q" 
+                class="form-control"
+                placeholder="Search company..."
+                value="{{ request.args.get('q','') }}"
+            >
+            <button class="btn btn-outline-secondary" type="submit">
+                <i class="bi bi-search"></i>
+            </button>
+        </div>
+    </form>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th colspan="5" class="text-center">Pending Approvals</th>
+            </tr>
+            <tr>
+                <th>Company ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Verification Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for company in companies %}
+            {% if company.verification_status == "Pending" %}
+            <tr>
+                <td>{{ company.CA_id }}</td>
+                <td>{{ company.organization_name }}</td>
+                <td>{{ company.company_email }}</td>
+                <td>{{ company.verification_status }}</td>
+                <td>
+                    {% if company.company_status == "Active" %}
+                    <form method="POST" action="{{ url_for('approve_company', CA_id=company.CA_id) }}" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">Approve</button>
+                    </form>
+                    {% else %}
+                    <form method="POST" action="{{ url_for('reject_company', CA_id=company.CA_id) }}" style="display:inline;">
+                        <button type="submit" class="btn btn-success btn-sm">Reject</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
