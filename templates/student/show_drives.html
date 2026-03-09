@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+<h3 class="text-center mb-4">Jobs Drives</h3>
+<form method="GET" action="{{ url_for('student_jobs') }}" class="mb-3">
+<div class="input-group">
+<input type="text" name="q" class="form-control" placeholder="Search jobs..." value="{{ request.args.get('q','') }}">
+<button class="btn btn-outline-secondary" type="submit">
+<i class="bi bi-search"></i>
+</button>
+</form>
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th colspan="12" class="text-center">Drives</th>
+    </tr>
+    <tr>
+      <th scope="col">Job_Drive ID</th>
+      <th scope="col">Company Name</th>
+      <th scope="col">Job Title</th>
+      <th scope="col">Job Type</th>
+      <th scope="col">Location</th>
+      <th scope="col">Experience / Eligibility</th>
+      <th scope="col">Skills Required</th>
+      <th scope="col">Roll Description</th>
+      <th scope="col">Salary Package</th>
+      <th scope="col">Vacancies</th>
+      <th scope="col">Last Date to Apply</th>
+      <th scope="col">Apply</th>
+    </tr>
+  </thead>
+  <tbody>
+{% for job in jobs %}
+<tr>
+  <td>{{ job.JD_id }}</td>
+  <td>{{ job.company.organization_name }}</td>
+  <td>{{ job.job_title }}</td>
+  <td>{{ job.job_type }}</td>
+  <td>{{ job.location }}</td>
+  <td>{{ job.eligibility_details }}</td>
+  <td>{{ job.skills_required }}</td>
+  <td>{{ job.role_description }}</td>
+  <td>{{ job.salary_package }}</td>
+  <td>{{ job.vacancies }}</td>
+  <td>{{ job.last_date_to_apply }}</td>
+  <td>
+  {% if job.JD_id in applied_ids %}
+    <span class="badge">Applied</span>
+  {% else %}
+    <a href="{{ url_for('apply_job', JD_id=job.JD_id) }}"
+       class="btn btn-sm btn-primary">
+       Apply
+    </a>
+  {% endif %}
+  </td>
+</tr>
+{% endfor %}
+
+  </tbody>
+</table>
+{% endblock %}

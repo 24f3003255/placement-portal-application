@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}
+Placement History
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="mb-4 text-center">Placement History</h3>
+    {% if placements %}
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>Company</th>
+                <th>Position</th>
+                <th>Package</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for placement in placements %}
+            <tr>
+                <td>
+                    {{ placement.company.organization_name }}
+                </td>
+                <td>
+                    {{ placement.position }}
+                </td>
+                <td>
+                    {{ placement.package }}
+                </td>
+                <td>
+                    {{ placement.date }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="text-center text-muted">
+        No placement records found.
+    </p>
+    {% endif %}
+</div>
+{% endblock %}

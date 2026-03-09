@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h4 class="mb-3">Apply for {{ job.job_title }}</h4>
+    <p class="text-muted">
+        <strong>Company:</strong> {{ job.company.organization_name }}
+    </p>
+    <form method="POST">
+        <div class="mb-3">
+            <label class="form-label">Cover Letter</label>
+            <textarea
+                name="cover_letter"
+                class="form-control"
+                rows="4"
+                required>
+            </textarea>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">
+                Why do you want to join this company?
+            </label>
+            <input
+                type="text"
+                name="why_join"
+                class="form-control"
+                required>
+        </div>
+        <button type="submit" class="btn btn-success">
+            Submit Application
+        </button>
+        <a
+            href="{{ url_for('student_jobs') }}"
+            class="btn btn-secondary">
+            Cancel
+        </a>
+    </form>
+</div>
+{% endblock %}

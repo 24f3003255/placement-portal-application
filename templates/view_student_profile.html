@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h3 class="mb-4">Student Profile</h3>
+    <table class="table table-bordered">
+        <tr><th>Name</th><td>{{ student.student_name }}</td></tr>
+        <tr><th>Email</th><td>{{ student.email_address }}</td></tr>
+        <tr><th>Contact</th><td>{{ student.contact_number }}</td></tr>
+        <tr><th>Branch</th><td>{{ student.branch }}</td></tr>
+        <tr><th>CGPA</th><td>{{ student.cgpa }}</td></tr>
+        <tr><th>Skills</th><td>{{ student.skills }}</td></tr>
+        <tr><th>Education</th><td>{{ student.educational_qualifications }}</td></tr>
+        <tr>
+            <th>Resume</th>
+            <td>
+                {% if student.resume_file %}
+                    <a href="{{ url_for('view_resume', filename=student.resume_file) }}" target="_blank">View Resume</a>
+                {% else %}
+                    No Resume Uploaded
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+</div>
+{% endblock %}

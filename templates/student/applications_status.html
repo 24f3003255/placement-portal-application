@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+    <h3 class="text-center mt-4">My Applications</h3>
+    <table class="table table-bordered mt-4">
+        <thead>
+            <tr>
+                <th>Job Title</th>
+                <th>Company</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for app in applications %}
+            <tr>
+                <td>
+                    {{ app.drive.job_title }}
+                </td>
+                <td>
+                    {{ app.drive.company.organization_name }}
+                </td>
+                <td>
+                    <span class="badge
+                        {% if app.application_status == 'Applied' %}
+                        bg-secondary
+                        {% elif app.application_status == 'Shortlisted' %}
+                        bg-primary
+                        {% elif app.application_status == 'Selected' %}
+                        bg-success
+                        {% else %}
+                        bg-danger
+                        {% endif %}
+                    ">
+                        {{ app.application_status }}
+                    </span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

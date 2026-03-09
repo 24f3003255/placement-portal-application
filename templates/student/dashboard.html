@@ -1,13 +1,36 @@
-{%- extends "base.html" -%}
-
-{% block title %}Student Dashboard - Placement Portal{% endblock %}
+{% extends "base.html" %}
 
 {% block content %}
 <div class="container mt-4">
-    <h3 class="text-center mb-4">Student Dashboard</h3>
-    <div class="row text-center">
-        <div class="col-md-4 col-sm-6 mb-3">
-{% endblock %}
-
-{% block style %}
+    <h2 class="mb-4">Welcome, {{ student.student_name }}!</h2>
+    <p class="text-muted mb-4">Access your placement-related features below.</p>
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100 text-center">
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <h5 class="card-title">Job Drives</h5>
+                    <p class="card-text"> apply for job drives.</p>
+                    <a href="{{ url_for('student_jobs') }}" class="btn btn-primary mt-auto">View Job Drives</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100 text-center">
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <h5 class="card-title">My Applications</h5>
+                    <p class="card-text"> status of your job applications.</p>
+                    <a href="{{ url_for('student_applications_status') }}" class="btn btn-primary mt-auto">View Applications</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100 text-center">
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <h5 class="card-title">Placement History</h5>
+                    <a href="{{ url_for('student_placement_history') }}" class="btn btn-success mt-auto">View History</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

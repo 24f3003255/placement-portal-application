@@ -47,29 +47,29 @@
                 <td>
                     {% if app.application_status not in ['Rejected', 'Placed'] %}
                     <form method="POST"
-                          action="{{ url_for('update_application_status', app_id=app.id, status='Shortlisted') }}"
-                          style="display:inline;">
+                        action="{{ url_for('update_application_status', app_id=app.JA_id, status='Shortlisted') }}"
+                        style="display:inline;">
                         <button type="submit" class="btn btn-sm btn-success">
                             Shortlist
                         </button>
                     </form>
                     <form method="POST"
-                          action="{{ url_for('update_application_status', app_id=app.id, status='Interview') }}"
-                          style="display:inline;">
+                        action="{{ url_for('update_application_status', app_id=app.JA_id, status='Interview') }}"
+                        style="display:inline;">
                         <button type="submit" class="btn btn-sm btn-warning">
                             Interview
                         </button>
                     </form>
                     <form method="POST"
-                          action="{{ url_for('update_application_status', app_id=app.id, status='Selected') }}"
-                          style="display:inline;">
+                        action="{{ url_for('update_application_status', app_id=app.JA_id, status='Selected') }}"
+                        style="display:inline;">
                         <button type="submit" class="btn btn-sm btn-primary">
                             Select
                         </button>
                     </form>
                     <form method="POST"
-                          action="{{ url_for('update_application_status', app_id=app.id, status='Rejected') }}"
-                          style="display:inline;">
+                        action="{{ url_for('update_application_status', app_id=app.JA_id, status='Rejected') }}"
+                        style="display:inline;">
                         <button type="submit" class="btn btn-sm btn-danger">
                             Reject
                         </button>
@@ -77,7 +77,7 @@
                     {% else %}
                     <span class="text-muted">Finalized</span>
                     {% endif %}
-                </td>
+</td>
                 <td>
                     <a href="{{ url_for('view_student_profile', student_id=app.student_id) }}" 
                        class="btn btn-sm btn-info">

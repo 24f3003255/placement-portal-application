@@ -10,3 +10,4 @@ instance/
 .DS_Store
 *.sqlite3
 *.db
+static/

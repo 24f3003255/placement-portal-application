@@ -1,4 +1,4 @@
-from flask import render_template, flash, request, redirect, url_for, session, abort, send_from_directory
+from flask import render_template, flash, request, redirect, url_for, session, abort, send_from_directory, current_app
 from datetime import datetime
 from app import app
 from models import db, AdminUser, StudentProfile, CompanyAccount, JobDrive, JobApplication, Placement
@@ -404,6 +404,34 @@ def activate_drive(JD_id):
     flash("Drive activated successfully","success")
     return redirect(url_for("company_drives"))
 
+@app.route("/student/update_profile", methods=["GET","POST"])
+@login_required("student")
+def student_update_profile():
+    student= StudentProfile.query.get_or_404(session["user_id"])
+    if request.method == "POST":
+        student.student_name = request.form["student_name"]
+        student.email_address = request.form["email_address"]
+        student.contact_number = request.form["contact_number"]
+        student.branch = request.form["branch"]
+        student.academic_year = request.form["academic_year"]
+        student.cgpa = float(request.form["cgpa"])
+        resume_file = request.files.get("resume_file")
+        if resume_file and resume_file.filename != "":
+            if resume_file.filename.lower().endswith((".pdf", ".doc", ".docx")):
+                filename = f"{uuid.uuid4()}_{secure_filename(resume_file.filename)}"
+                resume_path = os.path.join("static/resumes", filename)
+                os.makedirs("static/resumes", exist_ok=True)
+                resume_file.save(resume_path)
+                student.resume_file = filename
+            else:
+                flash("Only PDF or Word documents can be attached.", "danger")
+        student.educational_qualifications = request.form["educational_qualifications"]
+        student.skills = request.form["skills"]
+        db.session.commit()
+        flash("Profile updated successfully!", "success")
+        return redirect(url_for("student_update_profile"))
+    return render_template("student/update_profile.html")
+
 @app.route("/company/update_profile", methods=["GET", "POST"])
 @login_required("company")
 def company_update_profile():
@@ -440,3 +468,94 @@ def company_shortlisted_applications():
         "company/shortlisted_applications.html",
         applications=applications
     )
+
+@app.route("/uploads/resumes/<filename>")
+def view_resume(filename):
+    resume_folder = os.path.join(current_app.root_path, "static", "resumes")
+    file_path = os.path.join(resume_folder, filename)
+    if not os.path.exists(file_path):
+        abort(404)
+    return send_from_directory(resume_folder, filename, as_attachment=False)
+
+@app.route("/profile/student/<int:student_id>")
+@login_required()
+def view_student_profile(student_id):
+    student = StudentProfile.query.get_or_404(student_id)
+    if session["role"] not in ["admin", "company"]:
+        abort(403)
+    return render_template(
+        "view_student_profile.html",
+        student=student
+    )
+
+@app.route("/student/show_drives")
+@login_required("student")
+def student_jobs():
+    auto_close_drives()
+    student_id = session["user_id"]
+    applied_ids = {a.drive_id for a in JobApplication.query.filter_by(student_id=student_id).all()}
+    search = request.args.get("q", "").strip()
+    if search:
+        jobs = (JobDrive.query.join(CompanyAccount).filter(JobDrive.drive_status == "Active",JobDrive.drive_status_admin == "Enabled", JobDrive.job_title.contains(search)).all())
+    else:
+        jobs = (JobDrive.query.join(CompanyAccount).filter(JobDrive.drive_status == "Active",JobDrive.drive_status_admin == "Enabled").all())
+    return render_template(
+        "student/show_drives.html",
+        jobs=jobs,
+        applied_ids=applied_ids,
+        search=search
+    )
+
+@app.route("/student/jobs/<string:JD_id>/apply", methods=["GET","POST"])
+@login_required("student")
+def apply_job(JD_id):
+    student_id = session["user_id"]
+    if request.method == "GET":
+        job = JobDrive.query.get_or_404(JD_id)
+        if JobApplication.query.filter_by(student_id=student_id,drive_id=JD_id).first():
+            flash("You have already applied for this job","warning")
+            return redirect(url_for("student_applications_status"))
+        return render_template("student/application.html",job=job)
+    if request.method == "POST":
+        cover_letter = request.form["cover_letter"]
+        why_join = request.form["why_join"]
+        application = JobApplication(
+            student_id=student_id,
+            drive_id=JD_id,
+            cover_letter=cover_letter,
+            why_join=why_join
+        )
+        db.session.add(application)
+        db.session.commit()
+        flash("Applied successfully!","success")
+        return redirect(url_for("student_applications_status"))
+
+@app.route("/student/applications_status")
+@login_required("student")
+def student_applications_status():
+    student_id = session["user_id"]
+    applications = (
+        JobApplication.query
+        .join(JobDrive)
+        .join(CompanyAccount)
+        .filter(JobApplication.student_id == student_id)
+        .order_by(JobApplication.applied_on.desc())
+        .all()
+    )
+    return render_template(
+        "student/applications_status.html",
+        applications=applications
+    )
+
+@app.route("/student/placement_history")
+@login_required("student")
+def placement_history():
+    placements = Placement.query.filter_by(student_id=session["user_id"]).all()
+    return render_template("student/placement_history.html", placements=placements)
+
+@app.route("/student/placement_history")
+@login_required("student")
+def student_placement_history():
+    student_id = session["user_id"]
+    placements = Placement.query.filter_by(student_id=student_id).all()
+    return render_template("student/placement_history.html", placements=placements)
