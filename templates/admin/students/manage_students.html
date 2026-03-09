@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h3 class="text-center mb-4">Manage Students</h3>
+
+    <form method="GET" action="{{ url_for('manage_students') }}" class="mb-3">
+        <div class="input-group">
+            <input
+                type="text"
+                name="q"
+                class="form-control"
+                placeholder="Search student..."
+                value="{{ request.args.get('q','') }}"
+            >
+            <button class="btn btn-outline-secondary" type="submit">
+                <i class="bi bi-search"></i>
+            </button>
+        </div>
+    </form>
+
+    <table class="table table-bordered">
+
+        <thead>
+            <tr>
+                <th colspan="10" class="text-center">Student Details</th>
+            </tr>
+            <tr>
+                <th>Student ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Contact Number</th>
+                <th>Branch</th>
+                <th>Academic Year</th>
+                <th>Applications</th>
+                <th>Account Status</th>
+                <th>Actions</th>
+                <th>View Profile</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for student in students %}
+            <tr>
+
+                <td>{{ student.SP_id }}</td>
+                <td>{{ student.student_name }}</td>
+                <td>{{ student.email_address }}</td>
+                <td>{{ student.contact_number }}</td>
+                <td>{{ student.branch }}</td>
+                <td>{{ student.academic_year }}</td>
+                <td>{{ student.applications | length }}</td>
+                <td>{{ student.account_status }}</td>
+
+                <td>
+                    {% if student.account_status == "Enabled" %}
+                    <form method="POST" action="{{ url_for('disable_student', SP_id=student.SP_id) }}" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">Disable</button>
+                    </form>
+                    {% else %}
+                    <form method="POST" action="{{ url_for('enable_student', SP_id=student.SP_id) }}" style="display:inline;">
+                        <button type="submit" class="btn btn-success btn-sm">Enable</button>
+                    </form>
+                    {% endif %}
+                </td>
+
+                <td>
+                    <a href="{{ url_for('view_student_profile', student_id=student.SP_id) }}" class="btn btn-sm btn-secondary">
+                        View
+                    </a>
+                </td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+</div>
+{% endblock %}

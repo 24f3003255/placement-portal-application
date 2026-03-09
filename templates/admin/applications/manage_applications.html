@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="text-center mb-4">Manage Applications</h3>
+    <form method="GET" action="{{ url_for('manage_applications') }}" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control" placeholder="Search placement drives..." value="{{ request.args.get('q','') }}">
+            <button class="btn btn-outline-secondary" type="submit">
+                <i class="bi bi-search"></i>
+            </button>
+        </div>
+    </form>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th colspan="7" class="text-center">Application Details</th>
+            </tr>
+            <tr>
+                <th>Application ID</th>
+                <th>Student ID</th>
+                <th>Drive ID</th>
+                <th>Applied On</th>
+                <th>Application Status</th>
+                <th>Applied Branch</th>
+                <th>View Profile</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for application in applications %}
+            <tr>
+                <td>{{ application.JA_id }}</td>
+                <td>{{ application.student_id }}</td>
+                <td>{{ application.drive_id }}</td>
+                <td>{{ application.applied_on }}</td>
+                <td>{{ application.application_status }}</td>
+                <td>{{ application.applied_branch }}</td>
+                <td>
+                    <a href="{{ url_for('view_student_profile', student_id=application.student_id) }}" class="btn btn-sm btn-primary">
+                        View Profile
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

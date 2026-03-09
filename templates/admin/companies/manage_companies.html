@@ -2,7 +2,9 @@
 
 {% block content %}
 <div class="container mt-4">
+
     <h3 class="text-center mb-4">Manage Companies</h3>
+
     <form method="GET" action="{{ url_for('manage_companies') }}" class="mb-3">
         <div class="input-group">
             <input 
@@ -17,7 +19,9 @@
             </button>
         </div>
     </form>
+
     <table class="table table-bordered">
+
         <thead>
             <tr>
                 <th colspan="5" class="text-center">Pending Approvals</th>
@@ -30,6 +34,7 @@
                 <th>Actions</th>
             </tr>
         </thead>
+
         <tbody>
             {% for company in companies %}
             {% if company.verification_status == "Pending" %}
@@ -39,6 +44,7 @@
                 <td>{{ company.company_email }}</td>
                 <td>{{ company.verification_status }}</td>
                 <td>
+
                     {% if company.company_status == "Active" %}
                     <form method="POST" action="{{ url_for('approve_company', CA_id=company.CA_id) }}" style="display:inline;">
                         <button type="submit" class="btn btn-danger btn-sm">Approve</button>
@@ -48,10 +54,65 @@
                         <button type="submit" class="btn btn-success btn-sm">Reject</button>
                     </form>
                     {% endif %}
+
                 </td>
             </tr>
             {% endif %}
             {% endfor %}
         </tbody>
+
     </table>
+
+    <table class="table table-bordered">
+
+        <thead>
+            <tr>
+                <th colspan="10" class="text-center">Company Details</th>
+            </tr>
+            <tr>
+                <th>Company ID</th>
+                <th>Organization Name</th>
+                <th>Industry Sector</th>
+                <th>HR Name</th>
+                <th>HR Email</th>
+                <th>HR Phone</th>
+                <th>Website</th>
+                <th>Status</th>
+                <th>Drives</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for company in companies %}
+            <tr>
+                <td>{{ company.CA_id }}</td>
+                <td>{{ company.organization_name }}</td>
+                <td>{{ company.industry_sector }}</td>
+                <td>{{ company.hr_contact_name }}</td>
+                <td>{{ company.hr_contact_email }}</td>
+                <td>{{ company.hr_contact_phone }}</td>
+                <td>{{ company.company_website }}</td>
+                <td>{{ company.company_status }}</td>
+                <td>{{ company.drives | length }}</td>
+                <td>
+
+                    {% if company.company_status == "Active" %}
+                    <form method="POST" action="{{ url_for('blacklist_company', CA_id=company.CA_id) }}" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">Blacklist</button>
+                    </form>
+                    {% else %}
+                    <form method="POST" action="{{ url_for('activate_company', CA_id=company.CA_id) }}" style="display:inline;">
+                        <button type="submit" class="btn btn-success btn-sm">Activate</button>
+                    </form>
+                    {% endif %}
+
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+</div>
 {% endblock %}

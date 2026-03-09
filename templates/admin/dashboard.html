@@ -5,11 +5,41 @@
     <h3 class="text-center mb-4">Admin Dashboard</h3>
     <div class="row text-center">
         <div class="col-md-3 col-sm-6 mb-3">
+            <a href="{{ url_for('manage_students') }}" class="text-dark d-block" style="text-decoration:none;">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h6>Total Students</h6>
+                        <h4>{{ total_students }}</h4>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
             <a href="{{ url_for('manage_companies') }}" class="text-dark d-block" style="text-decoration:none;">
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <h6>Total Companies</h6>
                         <h4>{{ total_companies }}</h4>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <a href="{{ url_for('manage_drives') }}" class="text-dark d-block" style="text-decoration:none;">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h6>Total Placement Drives</h6>
+                        <h4>{{ total_drives }}</h4>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <a href="{{ url_for('manage_applications') }}" class="text-dark d-block" style="text-decoration:none;">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h6>Total Applications</h6>
+                        <h4>{{ total_applications }}</h4>
                     </div>
                 </div>
             </a>

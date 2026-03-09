@@ -12,15 +12,6 @@
     </li>
     {% endif %}
 
-    {% if student %}
-    <li class="nav-item mr-3">
-      <a class="nav-link {% if request.endpoint == 'student_update_profile' %}font-weight-bold{% endif %}"
-         href="{{ url_for('student_update_profile') }}">
-        Update Profile
-      </a>
-    </li>
-    {% endif %}
-
     {% if admin or company or student %}
     <li class="nav-item mr-3">
       <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>

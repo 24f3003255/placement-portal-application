@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="text-center mb-4">Manage Drives</h3>
+    <form method="GET" action="{{ url_for('manage_drives') }}" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control" placeholder="Search placement drives..." value="{{ request.args.get('q','') }}">
+            <button class="btn btn-outline-secondary" type="submit">
+                <i class="bi bi-search"></i>
+            </button>
+        </div>
+    </form>
+    <h4 class="text-success mb-3">Upcoming Drives</h4>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Recruitment ID</th>
+                <th>Company ID</th>
+                <th>Job Title</th>
+                <th>Job Type</th>
+                <th>Salary Package</th>
+                <th>Vacancies</th>
+                <th>Applications</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for drive in upcoming_drives %}
+            <tr>
+                <td>{{ drive.JD_id }}</td>
+                <td>{{ drive.company_id }}</td>
+                <td>{{ drive.job_title }}</td>
+                <td>{{ drive.job_type }}</td>
+                <td>{{ drive.salary_package }}</td>
+                <td>{{ drive.vacancies }}</td>
+                <td>{{ drive.applications | length }}</td>
+                <td>{{ drive.drive_status_admin }}</td>
+                <td>
+                    {% if drive.drive_status_admin == "Enabled" %}
+                    <form method="POST" action="{{ url_for('disable_drive', JD_id=drive.JD_id) }}" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">Disable</button>
+                    </form>
+                    {% else %}
+                    <form method="POST" action="{{ url_for('enable_drive', JD_id=drive.JD_id) }}" style="display:inline;">
+                        <button type="submit" class="btn btn-success btn-sm">Enable</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="9" class="text-center text-muted">No Upcoming Drives</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h4 class="text-danger mt-5 mb-3">Past Drives</h4>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Recruitment ID</th>
+                <th>Company ID</th>
+                <th>Job Title</th>
+                <th>Job Type</th>
+                <th>Salary Package</th>
+                <th>Vacancies</th>
+                <th>Applications</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for drive in past_drives %}
+            <tr>
+                <td>{{ drive.JD_id }}</td>
+                <td>{{ drive.company_id }}</td>
+                <td>{{ drive.job_title }}</td>
+                <td>{{ drive.job_type }}</td>
+                <td>{{ drive.salary_package }}</td>
+                <td>{{ drive.vacancies }}</td>
+                <td>{{ drive.applications | length }}</td>
+                <td>{{ drive.drive_status_admin }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="8" class="text-center text-muted">No Past Drives</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
