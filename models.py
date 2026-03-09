@@ -84,6 +84,7 @@ class JobApplication(db.Model):
     JA_id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.Integer, db.ForeignKey("student_profiles.SP_id"), nullable=False)
     drive_id = db.Column(db.String(20), db.ForeignKey("job_drives.JD_id"), nullable=False)
+    placement = db.relationship("Placement", backref="application",uselist=False,primaryjoin="JobApplication.JA_id==Placement.application_id")
     applied_on = db.Column(db.DateTime, default=datetime.utcnow)
     application_status = db.Column(db.String(20), default="Applied")
     applied_cgpa = db.Column(db.Float)
@@ -100,11 +101,9 @@ class Placement(db.Model):
     drive_id = db.Column(db.String(20),db.ForeignKey("job_drives.JD_id"),nullable=False)
     application_id = db.Column(db.Integer,db.ForeignKey("job_applications.JA_id"),nullable=False,unique=True)
     package_offered = db.Column(db.String(50))
-    offer_letter_link = db.Column(db.Text)
     placement_status = db.Column(db.String(20), default="Placed")
     joined_date = db.Column(db.Date)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
 
 def create_default_admin():
     admin = AdminUser.query.filter_by(email_address="admin@admin.com").first()

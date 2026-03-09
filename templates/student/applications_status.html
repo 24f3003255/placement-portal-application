@@ -9,6 +9,7 @@
             <tr>
                 <th>Job Title</th>
                 <th>Company</th>
+                <th>Resume</th>
                 <th>Status</th>
             </tr>
         </thead>
@@ -22,12 +23,17 @@
                     {{ app.drive.company.organization_name }}
                 </td>
                 <td>
+                <a href="{{ url_for('view_student_profile', student_id=session['user_id']) }}" class="btn btn-sm btn-secondary">
+                    View My Profile
+                </a>
+                </td>
+                <td>
                     <span class="badge
-                        {% if app.application_status == 'Applied' %}
+                        {% if app.application_status == 'Interview' %}
                         bg-secondary
                         {% elif app.application_status == 'Shortlisted' %}
                         bg-primary
-                        {% elif app.application_status == 'Selected' %}
+                        {% elif app.application_status == 'Placed' %}
                         bg-success
                         {% else %}
                         bg-danger

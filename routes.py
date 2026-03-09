@@ -21,11 +21,26 @@ def login_required(role=None):
         return wrapped
     return decorator
 
-
-@app.route('/')
+@app.route('/', methods=['GET','POST'])
 def index():
-    return render_template('index.html')
-
+    search = request.args.get('search')
+    if search:
+        students = StudentProfile.query.filter(
+            (StudentProfile.student_name.contains(search)) |
+            (StudentProfile.SP_id.contains(search))
+        ).all()
+        companies = CompanyAccount.query.filter(
+            (CompanyAccount.organization_name.contains(search)) |
+            (CompanyAccount.CA_id.contains(search))
+        ).all()
+    else:
+        students = StudentProfile.query.all()
+        companies = CompanyAccount.query.all()
+    return render_template(
+        "index.html",
+        students=students,
+        companies=companies
+    )
 
 @app.route('/login', methods=['GET','POST'])
 def login():
@@ -169,7 +184,7 @@ def company_dashboard():
     closed_jobs = sum(1 for j in jobs if j.drive_status == "Closed")
     applications = (JobApplication.query.join(JobDrive).filter(JobDrive.company_id == company.CA_id).all())
     total_applications = len(applications)
-    shortlisted = sum(1 for a in applications if a.application_status == "Shortlisted")
+    shortlisted = sum(1 for a in applications if a.application_status in ("Shortlisted"))
     if not company.profile_completed:
         return redirect(url_for("company_update_profile"))
     return render_template("company/dashboard.html",
@@ -336,24 +351,29 @@ def view_drive_applications(drive_id):
 @app.route("/company/application/<int:app_id>/<string:status>", methods=["POST"])
 @login_required("company")
 def update_application_status(app_id, status):
-    allowed_status = ["Shortlisted","Interview","Rejected","Selected"]
+    allowed_status = ["Shortlisted", "Interview", "Rejected", "Placed"]
     if status not in allowed_status:
         abort(400)
     application = JobApplication.query.get_or_404(app_id)
     if application.drive.company_id != session["user_id"]:
         abort(403)
     application.application_status = status
-    if status == "Selected":
-        placement = Placement(
-            student_id=application.student_id,
-            drive_id=application.drive_id,
-            company_id=session["user_id"],
-            application_id=application.JA_id,
-        )
-        db.session.add(placement)
-        application.application_status = "Placed"
+    if status == "Placed":
+        placement = Placement.query.filter_by(application_id=application.JA_id).first()
+        if placement:
+            placement.placement_status = "Placed"
+        else:
+            placement = Placement(
+                student_id=application.student_id,
+                company_id=application.drive.company_id,
+                drive_id=application.drive_id,
+                application_id=application.JA_id,
+                package_offered=None,
+                placement_status="Placed"
+            )
+            db.session.add(placement)
     db.session.commit()
-    return redirect(url_for("view_drive_applications",drive_id=application.drive_id))
+    return redirect(url_for("view_drive_applications", drive_id=application.drive_id))
 
 @app.route("/company/create_jobs", methods=["GET","POST"])
 @login_required("company")
@@ -457,13 +477,22 @@ def auto_close_drives():
     ).update({"drive_status": "Closed"})
     db.session.commit()
 
+from flask import render_template, session
+from models import db, JobApplication, StudentProfile, JobDrive
+
 @app.route("/company/shortlisted_applications")
+@login_required()
 def company_shortlisted_applications():
-    company_id = session.get("company_id")
-    applications = JobApplication.query.join(JobDrive).filter(
-        JobDrive.company_id == company_id,
-        JobApplication.application_status == "Shortlisted"
-    ).all()
+    company_id = session["user_id"]
+    applications = (
+        db.session.query(JobApplication, StudentProfile, JobDrive)
+        .join(StudentProfile, JobApplication.student_id == StudentProfile.SP_id)
+        .join(JobDrive, JobApplication.drive_id == JobDrive.JD_id)
+        .filter(JobDrive.company_id == company_id)
+        .filter(JobApplication.application_status == "Shortlisted")
+        .order_by(JobApplication.applied_on.desc())
+        .all()
+    )
     return render_template(
         "company/shortlisted_applications.html",
         applications=applications
@@ -481,8 +510,6 @@ def view_resume(filename):
 @login_required()
 def view_student_profile(student_id):
     student = StudentProfile.query.get_or_404(student_id)
-    if session["role"] not in ["admin", "company"]:
-        abort(403)
     return render_template(
         "view_student_profile.html",
         student=student
@@ -554,8 +581,38 @@ def placement_history():
     return render_template("student/placement_history.html", placements=placements)
 
 @app.route("/student/placement_history")
+@app.route("/student/placement_history")
 @login_required("student")
 def student_placement_history():
     student_id = session["user_id"]
-    placements = Placement.query.filter_by(student_id=student_id).all()
+    placements = (
+        db.session.query(Placement, CompanyAccount, JobDrive)
+        .join(CompanyAccount, Placement.company_id == CompanyAccount.CA_id)
+        .join(JobDrive, Placement.drive_id == JobDrive.JD_id)
+        .filter(Placement.student_id == student_id)
+        .order_by(Placement.joined_date.desc())
+        .all()
+    )
     return render_template("student/placement_history.html", placements=placements)
+
+@app.route("/company/update_package/<int:app_id>", methods=["POST"])
+@login_required("company")
+def update_package(app_id):
+    application = JobApplication.query.get_or_404(app_id)
+    if application.drive.company_id != session["user_id"]:
+        abort(403)
+    package = request.form["package"]
+    if application.placement is None:
+        placement = Placement(
+            student_id=application.student_id,
+            company_id=application.drive.company_id,
+            drive_id=application.drive_id,
+            application_id=application.JA_id,
+            package_offered=package
+        )
+        db.session.add(placement)
+    else:
+        application.placement.package_offered = package
+    db.session.commit()
+    flash("Package updated successfully", "success")
+    return redirect(url_for("view_drive_applications", drive_id=application.drive_id))

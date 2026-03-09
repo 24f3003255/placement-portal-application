@@ -14,6 +14,7 @@
                 <th>CGPA</th>
                 <th>Resume</th>
                 <th>Status</th>
+                <th>Package Offered</th>
                 <th>Action</th>
                 <th>View Student Profile</th>
             </tr>
@@ -45,6 +46,13 @@
                     </span>
                 </td>
                 <td>
+                    <Form method="POST" action="{{ url_for('update_package', app_id=app.JA_id) }}" class="d-flex">
+                        <input type="text" name="package" class="form-control form-control-sm" placeholder="Package" 
+                            value="{{ app.placement.package_offered if app.placement else '' }}">
+                        <button type="submit" class="btn btn-sm btn-outline-primary ms-2">Update</button>
+                    </Form>
+                </td>
+                <td>
                     {% if app.application_status not in ['Rejected', 'Placed'] %}
                     <form method="POST"
                         action="{{ url_for('update_application_status', app_id=app.JA_id, status='Shortlisted') }}"
@@ -61,10 +69,10 @@
                         </button>
                     </form>
                     <form method="POST"
-                        action="{{ url_for('update_application_status', app_id=app.JA_id, status='Selected') }}"
+                        action="{{ url_for('update_application_status', app_id=app.JA_id, status='Placed') }}"
                         style="display:inline;">
                         <button type="submit" class="btn btn-sm btn-primary">
-                            Select
+                            Placed
                         </button>
                     </form>
                     <form method="POST"
@@ -77,7 +85,7 @@
                     {% else %}
                     <span class="text-muted">Finalized</span>
                     {% endif %}
-</td>
+                </td>
                 <td>
                     <a href="{{ url_for('view_student_profile', student_id=app.student_id) }}" 
                        class="btn btn-sm btn-info">

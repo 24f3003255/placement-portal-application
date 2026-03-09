@@ -1,50 +1,43 @@
 {% extends "base.html" %}
 
-{% block title %}
-Shortlisted Applications
-{% endblock %}
 {% block content %}
-<div class="container mt-4">
-    <h3 class="text-center mb-4">Shortlisted Students</h3>
-    {% if applications %}
-        <table class="table table-bordered table-hover text-center">
-            <thead class="table-light">
-                <tr>
-                    <th>Student</th>
-                    <th>Drive</th>
-                    <th>Branch</th>
-                    <th>CGPA</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for app in applications %}
-                <tr>
-                    <td>
-                        {{ app.student.student_name }}
-                    </td>
-                    <td>
-                        {{ app.drive.job_title }}
-                    </td>
-                    <td>
-                        {{ app.student.branch }}
-                    </td>
-                    <td>
-                        {{ app.student.cgpa }}
-                    </td>
-                    <td>
-                        <span class="badge bg-success">
-                            {{ app.application_status }}
-                        </span>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p class="text-center text-muted">
-            No shortlisted applications yet.
-        </p>
-    {% endif %}
-</div>
+<h2 class="text-center">Shortlisted Students</h2>
+<table class="table table-bordered text-center">
+    <thead>
+        <tr>
+            <th>Student Name</th>
+            <th>Profile</th>
+            <th>Resume</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for app, student, drive in applications %}
+        <tr>
+            <td>{{ student.student_name }}</td>
+            <td>
+                <a href="{{ url_for('view_student_profile', student_id=student.SP_id) }}" 
+                   class="btn btn-sm btn-info">
+                   View Profile
+                </a>
+            </td>
+            <td>
+                {% if student.resume_file %}
+                <a href="{{ url_for('view_resume', filename=student.resume_file) }}" 
+                   class="btn btn-sm btn-secondary">
+                   View Resume
+                </a>
+                {% else %}
+                No Resume
+                {% endif %}
+            </td>
+            <td>
+                <span class="badge bg-warning text-dark">
+                    {{ app.application_status }}
+                </span>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}

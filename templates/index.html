@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="text-center">Placement Portal Directory</h2>
+<form method="GET" action="/">
+    <input type="text" name="search" placeholder="Search student or company" class="form-control mb-3">
+</form>
+<div class="row">
+<div class="col-md-6">
+<h4>Students</h4>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Student Name</th>
+            <th>Student ID</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for student in students %}
+        <tr>
+            <td>{{ student.student_name }}</td>
+            <td>{{ student.SP_id }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+<div class="col-md-6">
+<h4>Companies</h4>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Company Name</th>
+            <th>Company ID</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for company in companies %}
+        <tr>
+            <td>{{ company.organization_name }}</td>
+            <td>{{ company.CA_id }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+</div>
+{% endblock %}

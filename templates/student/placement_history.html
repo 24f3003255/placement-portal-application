@@ -1,45 +1,35 @@
 {% extends "base.html" %}
 
-{% block title %}
-Placement History
-{% endblock %}
-
+{% block title %}Placement History{% endblock %}
 {% block content %}
 <div class="container mt-4">
     <h3 class="mb-4 text-center">Placement History</h3>
+    <p> If you want to look for the id's click home page</p>
     {% if placements %}
-    <table class="table table-bordered table-hover">
-        <thead class="table-light">
+    <table class="table table-bordered text-center">
+        <thead>
             <tr>
-                <th>Company</th>
-                <th>Position</th>
+                <th>Student ID</th>
+                <th>Company ID</th>
                 <th>Package</th>
-                <th>Date</th>
             </tr>
         </thead>
         <tbody>
             {% for placement in placements %}
             <tr>
-                <td>
-                    {{ placement.company.organization_name }}
-                </td>
-                <td>
-                    {{ placement.position }}
-                </td>
-                <td>
-                    {{ placement.package }}
-                </td>
-                <td>
-                    {{ placement.date }}
-                </td>
+                <td>{{ placement.student_id }}</td>
+                <td>{{ placement.company_id }}</td>
+                <td>{{ placement.package_offered }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4">No placements found.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
     {% else %}
-    <p class="text-center text-muted">
-        No placement records found.
-    </p>
+    <p class="text-center text-muted">No placement records found.</p>
     {% endif %}
 </div>
 {% endblock %}

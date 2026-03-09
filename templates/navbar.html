@@ -1,6 +1,12 @@
 <nav class="navbar navbar-light bg-light">
   <a class="navbar-brand" href="/">Placement Portal</a>
   <ul class="navbar-nav flex-row">
+    <li class="nav-item mr-3">
+      <a class="nav-link {% if request.endpoint == 'index' %}font-weight-bold{% endif %}"
+         href="{{ url_for('index') }}">
+        Home(Directory)
+      </a>
+    </li>
     {% if admin or company or student %}
     <li class="nav-item mr-3">
       <a class="nav-link {% if request.endpoint in ['admin_dashboard','company_dashboard','student_dashboard'] %}font-weight-bold{% endif %}"
