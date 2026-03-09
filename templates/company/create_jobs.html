@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h4 class="mb-4 text-center">Post New Job</h4>
+    <form method="POST" class="mx-auto" style="max-width:600px;">
+        <div class="mb-3">
+            <label class="form-label">Job Title</label>
+            <input type="text" name="job_title" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Job Type</label>
+            <select name="job_type" class="form-control">
+                <option>Full-Time</option>
+                <option>Internship</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Location</label>
+            <input type="text" name="location" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Required Skills</label>
+            <textarea name="skills_required" class="form-control" rows="2"></textarea>
+        </div>
+            <div class="mb-3">
+            <label class="form-label">role_description</label>
+            <input type="text" name="role_description" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Experience / Eligibility</label>
+            <textarea name="experience" class="form-control" rows="2"></textarea>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Salary Package</label>
+            <input type="text" name="salary_package" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Number of Vacancies</label>
+            <input type="number" name="vacancies" class="form-control" min="1" value="1" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Last Date to Apply</label>
+            <input type="date" name="last_date_to_apply" class="form-control" required>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">
+                Post Job
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

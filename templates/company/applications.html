@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h4 class="mb-3">
+        Applications - {{ drive.job_title }}
+    </h4>
+    {% if applications %}
+    <table class="table table-bordered table-hover text-center">
+        <thead class="table-light">
+            <tr>
+                <th>Student Name</th>
+                <th>Branch</th>
+                <th>CGPA</th>
+                <th>Resume</th>
+                <th>Status</th>
+                <th>Action</th>
+                <th>View Student Profile</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for app in applications %}
+            <tr>
+                <td>{{ app.student.student_name }}</td>
+                <td>{{ app.student.branch }}</td>
+                <td>{{ app.student.cgpa }}</td>
+                <td>
+                    {% if app.student.resume_file %}
+                    <a href="{{ url_for('view_resume', filename=app.student.resume_file) }}" target="_blank">
+                        View
+                    </a>
+                    {% else %}
+                    <span class="text-muted">Not Uploaded</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <span class="badge
+                        {% if app.application_status == 'Shortlisted' %} bg-success
+                        {% elif app.application_status == 'Interview' %} bg-warning
+                        {% elif app.application_status == 'Rejected' %} bg-danger
+                        {% elif app.application_status == 'Placed' %} bg-primary
+                        {% else %} bg-secondary
+                        {% endif %}">
+                        {{ app.application_status }}
+                    </span>
+                </td>
+                <td>
+                    {% if app.application_status not in ['Rejected', 'Placed'] %}
+                    <form method="POST"
+                          action="{{ url_for('update_application_status', app_id=app.id, status='Shortlisted') }}"
+                          style="display:inline;">
+                        <button type="submit" class="btn btn-sm btn-success">
+                            Shortlist
+                        </button>
+                    </form>
+                    <form method="POST"
+                          action="{{ url_for('update_application_status', app_id=app.id, status='Interview') }}"
+                          style="display:inline;">
+                        <button type="submit" class="btn btn-sm btn-warning">
+                            Interview
+                        </button>
+                    </form>
+                    <form method="POST"
+                          action="{{ url_for('update_application_status', app_id=app.id, status='Selected') }}"
+                          style="display:inline;">
+                        <button type="submit" class="btn btn-sm btn-primary">
+                            Select
+                        </button>
+                    </form>
+                    <form method="POST"
+                          action="{{ url_for('update_application_status', app_id=app.id, status='Rejected') }}"
+                          style="display:inline;">
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            Reject
+                        </button>
+                    </form>
+                    {% else %}
+                    <span class="text-muted">Finalized</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ url_for('view_student_profile', student_id=app.student_id) }}" 
+                       class="btn btn-sm btn-info">
+                        View Profile
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="text-muted">No applications received yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

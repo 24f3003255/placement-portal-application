@@ -1,13 +1,61 @@
-{%- extends "base.html" -%}
-
+{% extends "base.html" %}
 {% block title %}Company Dashboard - Placement Portal{% endblock %}
-
 {% block content %}
 <div class="container mt-4">
-    <h3 class="text-center mb-4">Company Dashboard</h3>
+    <h3 class="text-center mb-2">Company Dashboard</h3>
+    <p class="text-center mb-4">Welcome to the company dashboard</p>
     <div class="row text-center">
-        <div class="col-md-4 col-sm-6 mb-3">
+        <div class="col-md-3 col-sm-6 mb-3">
+            <a href="{{ url_for('company_drives') }}" class="text-dark d-block" style="text-decoration:none;">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h6>Total Job Drives</h6>
+                        <h4>{{ total_jobs }}</h4>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6>Active Job Drives</h6>
+                    <h4>{{ active_jobs }}</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6>Closed Job Drives</h6>
+                    <h4>{{ closed_jobs }}</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <a href="{{ url_for('company_shortlisted_applications') }}" class="text-dark d-block" style="text-decoration:none;">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h6>Shortlisted Applications</h6>
+                        <h4>{{ shortlisted }}</h4>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="text-center mt-3">
+        <a href="{{ url_for('create_job_drive') }}" class="btn btn-primary">Create Job</a>
+    </div>
+</div>
 {% endblock %}
 
 {% block style %}
+<style>
+.card{
+    cursor:pointer;
+    transition:transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card:hover{
+    transform:scale(1.05);
+}
+</style>
 {% endblock %}

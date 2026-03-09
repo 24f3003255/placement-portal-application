@@ -129,7 +129,7 @@ def register_post():
 @login_required("admin")
 def admin_dashboard():
     today = date.today()
-    
+    auto_close_drives()
     total_students = StudentProfile.query.count()
     total_companies = CompanyAccount.query.count()
     total_applications = JobApplication.query.count()
@@ -161,7 +161,23 @@ def student_dashboard():
 @app.route("/company/dashboard")
 @login_required("company")
 def company_dashboard():
-    return render_template("company/dashboard.html")
+    auto_close_drives()
+    company = CompanyAccount.query.get(session["user_id"])
+    jobs = JobDrive.query.filter_by(company_id=company.CA_id).all()
+    total_jobs = len(jobs)
+    active_jobs = sum(1 for j in jobs if j.drive_status == "Active")
+    closed_jobs = sum(1 for j in jobs if j.drive_status == "Closed")
+    applications = (JobApplication.query.join(JobDrive).filter(JobDrive.company_id == company.CA_id).all())
+    total_applications = len(applications)
+    shortlisted = sum(1 for a in applications if a.application_status == "Shortlisted")
+    if not company.profile_completed:
+        return redirect(url_for("company_update_profile"))
+    return render_template("company/dashboard.html",
+        total_jobs=total_jobs,
+        active_jobs=active_jobs,
+        closed_jobs=closed_jobs,
+        total_applications=total_applications,
+        shortlisted=shortlisted)
 
 @app.route('/admin/companies/manage_companies')
 @login_required("admin")
@@ -301,3 +317,126 @@ def disable_drive(JD_id):
     db.session.commit()
     flash("Drive has been disabled.", "success")
     return redirect(url_for('manage_drives'))
+
+@app.route("/company/drives")
+@login_required("company")
+def company_drives():
+    company_id = session["user_id"]
+    drives = (JobDrive.query.filter_by(company_id=company_id).order_by(JobDrive.posted_on.desc()).all())
+    return render_template("company/drives.html", drives=drives)
+
+@app.route("/company/drives/<string:drive_id>/applications")
+@login_required("company")
+def view_drive_applications(drive_id):
+    company_id = session["user_id"]
+    drive = JobDrive.query.filter_by(JD_id=drive_id,company_id=company_id).first_or_404()
+    applications = (JobApplication.query.filter_by(drive_id=drive_id).order_by(JobApplication.applied_on.desc()).all())
+    return render_template("company/applications.html",drive=drive,applications=applications)
+
+@app.route("/company/application/<int:app_id>/<string:status>", methods=["POST"])
+@login_required("company")
+def update_application_status(app_id, status):
+    allowed_status = ["Shortlisted","Interview","Rejected","Selected"]
+    if status not in allowed_status:
+        abort(400)
+    application = JobApplication.query.get_or_404(app_id)
+    if application.drive.company_id != session["user_id"]:
+        abort(403)
+    application.application_status = status
+    if status == "Selected":
+        placement = Placement(
+            student_id=application.student_id,
+            drive_id=application.drive_id,
+            company_id=session["user_id"],
+            application_id=application.JA_id,
+        )
+        db.session.add(placement)
+        application.application_status = "Placed"
+    db.session.commit()
+    return redirect(url_for("view_drive_applications",drive_id=application.drive_id))
+
+@app.route("/company/create_jobs", methods=["GET","POST"])
+@login_required("company")
+def create_job_drive():
+    company = CompanyAccount.query.get(session["user_id"])
+    if company.verification_status != "Approved":
+        flash("Your company is not approved by admin yet.","danger")
+        return redirect(url_for("company_dashboard"))
+    if request.method == "POST":
+        drive = JobDrive(
+            company_id=company.CA_id,
+            job_title=request.form["job_title"],
+            job_type=request.form["job_type"],
+            location=request.form["location"],
+            role_description=request.form["role_description"],
+            skills_required=request.form["skills_required"],
+            eligibility_details=request.form["experience"],
+            salary_package=request.form["salary_package"],
+            vacancies=int(request.form["vacancies"]),
+            last_date_to_apply=datetime.strptime(request.form["last_date_to_apply"],"%Y-%m-%d").date(),
+            drive_status="Active"
+        )
+        db.session.add(drive)
+        db.session.commit()
+        flash("Job drive posted successfully","success")
+        return redirect(url_for("company_dashboard"))
+    return render_template("company/create_jobs.html")
+
+@app.route("/company/drives/close/<string:JD_id>",methods=["POST"])
+@login_required("company")
+def close_drive(JD_id):
+    drive = JobDrive.query.get_or_404(JD_id)
+    if drive.company_id != session["user_id"]:
+        abort(403)
+    drive.drive_status = "Closed"
+    db.session.commit()
+    flash("Drive closed successfully","success")
+    return redirect(url_for("company_drives"))
+
+@app.route("/company/drives/activate/<string:JD_id>",methods=["POST"])
+@login_required("company")
+def activate_drive(JD_id):
+    drive = JobDrive.query.get_or_404(JD_id)
+    if drive.company_id != session["user_id"]:
+        abort(403)
+    drive.drive_status = "Active"
+    db.session.commit()    
+    flash("Drive activated successfully","success")
+    return redirect(url_for("company_drives"))
+
+@app.route("/company/update_profile", methods=["GET", "POST"])
+@login_required("company")
+def company_update_profile():
+    company = CompanyAccount.query.get(session["user_id"])
+    if company.profile_completed:
+        return redirect(url_for("company_dashboard"))
+    if request.method == "POST":
+        company.industry_sector = request.form["industry_sector"]
+        company.hr_contact_name = request.form["hr_contact_name"]
+        company.hr_contact_phone = request.form["hr_contact_phone"]
+        company.hr_contact_email = request.form["hr_contact_email"]
+        company.company_website = request.form["company_website"]
+        company.profile_completed = True
+        db.session.commit()
+        flash("Profile updated successfully", "success")
+        return redirect(url_for("company_dashboard"))
+    return render_template("company/update_profile.html")
+
+def auto_close_drives():
+    JobDrive.query.filter(
+        JobDrive.last_date_to_apply < date.today(),
+        JobDrive.drive_status == "Active"
+    ).update({"drive_status": "Closed"})
+    db.session.commit()
+
+@app.route("/company/shortlisted_applications")
+def company_shortlisted_applications():
+    company_id = session.get("company_id")
+    applications = JobApplication.query.join(JobDrive).filter(
+        JobDrive.company_id == company_id,
+        JobApplication.application_status == "Shortlisted"
+    ).all()
+    return render_template(
+        "company/shortlisted_applications.html",
+        applications=applications
+    )

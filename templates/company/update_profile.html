@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Update Profile - Placement Portal{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="text-center mb-4">Update Profile</h3>
+    <form method="POST" action="{{ url_for('company_update_profile') }}" class="mx-auto" style="max-width:500px;">
+        <div class="mb-3">
+            <label for="industry_sector" class="form-label">Industry Sector</label>
+            <input type="text" class="form-control" id="industry_sector" name="industry_sector"
+                   value="{{ company.industry_sector }}">
+        </div>
+        <div class="mb-3">
+            <label for="hr_contact_name" class="form-label">HR Contact Name</label>
+            <input type="text" class="form-control" id="hr_contact_name" name="hr_contact_name"
+                   value="{{ company.hr_contact_name }}">
+        </div>
+        <div class="mb-3">
+            <label for="hr_contact_email" class="form-label">HR Contact Email</label>
+            <input type="email" class="form-control" id="hr_contact_email" name="hr_contact_email"
+                   value="{{ company.company_email }}">
+        </div>
+        <div class="mb-3">
+            <label for="hr_contact_phone" class="form-label">HR Contact Phone</label>
+            <input type="text" class="form-control" id="hr_contact_phone" name="hr_contact_phone"
+                   value="{{ company.hr_contact_phone }}">
+        </div>
+        <div class="mb-3">
+            <label for="company_website" class="form-label">Company Website</label>
+            <input type="text" class="form-control" id="company_website" name="company_website"
+                   value="{{ company.company_website }}">
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">Update Profile</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

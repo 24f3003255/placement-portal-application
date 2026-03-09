@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="mb-3">My Job Drives</h3>
+    {% if drives %}
+    <table class="table table-bordered table-hover text-center">
+        <thead class="table-light">
+            <tr>
+                <th>Drive ID</th>
+                <th>Job Title</th>
+                <th>Job Type</th>
+                <th>Posted On</th>
+                <th>Last Date</th>
+                <th>Vacancies</th>
+                <th>Salary Package</th>
+                <th>Applications</th>
+                <th>Status</th>
+                <th>Admin Approval Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for drive in drives %}
+            <tr>
+                <td>{{ drive.JD_id }}</td>
+                <td>{{ drive.job_title }}</td>
+                <td>{{ drive.job_type }}</td>
+                <td>{{ drive.posted_on.strftime("%d-%m-%Y") }}</td>
+                <td>{{ drive.last_date_to_apply.strftime("%d-%m-%Y") }}</td>
+                <td>{{ drive.vacancies }}</td>
+                <td>{{ drive.salary_package }}</td>
+                <td>{{ drive.applications | length }}</td>
+                <td>{{ drive.drive_status }}</td>
+                <td>{{ drive.drive_status_admin }}</td>
+                <td>
+                    <a href="{{ url_for('view_drive_applications', drive_id=drive.JD_id) }}" class="btn btn-sm btn-primary">
+                        View Applications
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="text-muted">No job drives posted yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

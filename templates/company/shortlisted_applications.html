@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}
+Shortlisted Applications
+{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h3 class="text-center mb-4">Shortlisted Students</h3>
+    {% if applications %}
+        <table class="table table-bordered table-hover text-center">
+            <thead class="table-light">
+                <tr>
+                    <th>Student</th>
+                    <th>Drive</th>
+                    <th>Branch</th>
+                    <th>CGPA</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for app in applications %}
+                <tr>
+                    <td>
+                        {{ app.student.student_name }}
+                    </td>
+                    <td>
+                        {{ app.drive.job_title }}
+                    </td>
+                    <td>
+                        {{ app.student.branch }}
+                    </td>
+                    <td>
+                        {{ app.student.cgpa }}
+                    </td>
+                    <td>
+                        <span class="badge bg-success">
+                            {{ app.application_status }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="text-center text-muted">
+            No shortlisted applications yet.
+        </p>
+    {% endif %}
+</div>
+{% endblock %}
