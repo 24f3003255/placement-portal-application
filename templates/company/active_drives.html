@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2>Active Job Drives</h2>
+    <table class="table table-bordered mt-3">
+        <thead>
+            <tr>
+                <th>Job Title</th>
+                <th>Location</th>
+                <th>Package</th>
+                <th>Last Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for drive in drives %}
+            <tr>
+                <td>{{ drive.job_title }}</td>
+                <td>{{ drive.location }}</td>
+                <td>{{ drive.salary_package }}</td>
+                <td>{{ drive.last_date_to_apply }}</td>
+                <td>
+                    <a href="{{ url_for('view_drive_applications', drive_id=drive.JD_id) }}"
+                       class="btn btn-primary btn-sm">
+                       View Applications
+                    </a>
+                    <form action="{{ url_for('close_drive', JD_id=drive.JD_id) }}"
+                          method="POST"
+                          style="display:inline;">
+                        <button class="btn btn-danger btn-sm">
+                            Close
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

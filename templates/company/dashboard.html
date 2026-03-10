@@ -4,7 +4,7 @@
 <div class="container mt-4">
     <h3 class="text-center mb-2">Company Dashboard</h3>
     <p class="text-center mb-4">Welcome to the company dashboard</p>
-    <p> Click on the boxex to now more details</p>
+    <p> Click on the boxes to now more details</p>
     <div class="row text-center">
         <div class="col-md-3 col-sm-6 mb-3">
             <a href="{{ url_for('company_drives') }}" class="text-dark d-block" style="text-decoration:none;">
@@ -18,19 +18,23 @@
         </div>
         <div class="col-md-3 col-sm-6 mb-3">
             <div class="card shadow-sm">
+            <a href="{{ url_for('active_drives') }}" class="text-dark d-block" style="text-decoration:none;">
                 <div class="card-body">
                     <h6>Active Job Drives</h6>
                     <h4>{{ active_jobs }}</h4>
                 </div>
             </div>
+            </a>
         </div>
         <div class="col-md-3 col-sm-6 mb-3">
             <div class="card shadow-sm">
+            <a href="{{ url_for('closed_drives') }}" class="text-dark d-block" style="text-decoration:none;">
                 <div class="card-body">
                     <h6>Closed Job Drives</h6>
                     <h4>{{ closed_jobs }}</h4>
                 </div>
             </div>
+            </a>
         </div>
         <div class="col-md-3 col-sm-6 mb-3">
             <a href="{{ url_for('company_shortlisted_applications') }}" class="text-dark d-block" style="text-decoration:none;">

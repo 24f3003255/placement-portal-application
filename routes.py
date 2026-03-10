@@ -480,6 +480,26 @@ def auto_close_drives():
 from flask import render_template, session
 from models import db, JobApplication, StudentProfile, JobDrive
 
+@app.route("/company/active_drives")
+@login_required("company")
+def active_drives():
+    company_id = session["user_id"]
+    drives = JobDrive.query.filter_by(
+        company_id=company_id,
+        drive_status="Active"
+    ).order_by(JobDrive.posted_on.desc()).all()
+    return render_template("company/active_drives.html", drives=drives)
+
+@app.route("/company/closed_drives")
+@login_required("company")
+def closed_drives():
+    company_id = session["user_id"]
+    drives = JobDrive.query.filter_by(
+        company_id=company_id,
+        drive_status="Closed"
+    ).order_by(JobDrive.posted_on.desc()).all()
+    return render_template("company/closed_drives.html",drives=drives)
+
 @app.route("/company/shortlisted_applications")
 @login_required()
 def company_shortlisted_applications():
